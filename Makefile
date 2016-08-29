@@ -9,7 +9,7 @@ game.o: game.asm
 
 $(NAME).gb: game.o
 	rgblink -n game.sym -m $*.map -o $@ $<
-	rgbfix -v $@
+	rgbfix -v -p0 $@
 
 run: $(NAME).gb
 	gngb --fps -a $(NAME).gb
