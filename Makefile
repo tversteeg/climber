@@ -14,5 +14,8 @@ $(NAME).gb: game.o
 run: $(NAME).gb
 	gngb --fps -a $(NAME).gb
 
+termboy: $(NAME).gb
+	termboy $(NAME).gb
+
 clean:
 	$(RM) game.o $(NAME).gb
