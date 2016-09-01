@@ -1,22 +1,34 @@
 INCLUDE "header.inc"
 
-; $0150: Code!
+INCLUDE "constants.asm"
+
 main:
+	nop
 	di
-	call	StopLCD
+
 	; Set background palette
-	ld	a,$e4
-	ld	[$ff47],a	; rBGP
+	ld	a,%11100100
+	ld	[rBGP],a
+
 	; Set X/Y scroll registers to 0
-	ld	a,0
-	ld	[$FF42],a	; rSCY
-	ld	[$FF43],a	; rSCX
+	xor	a
+	ld	[rSCY],a
+	ld	[rSCX],a
+
+	; Turn on the LCD Display
+	ld	a,%10010101 ; LCDCF_ON|LCDCF_BG8000|LCDCF_BG9800|LCDCF_BGON|LCDCF_OBJ16|LCDCF_OBJOFF
+	ld	[rLCDC],a
+
+	ei
+
+	ld	sp,$FFFF ; Initialize the stack pointer
+	call	StopLCD
 .loop:
 	halt
 	jr	.loop
 
 StopLCD:
-	ld	a,[$FF40]	; rLCDC
+	ld	a,[rLCDC]
 	rlca
 	ret	nc
 
@@ -26,4 +38,3 @@ timer:
 serial:
 joypad:
 	reti
-
