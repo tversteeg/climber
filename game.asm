@@ -37,6 +37,16 @@ StopLCD:
 	ld	a,[rLCDC]
 	rlca
 	ret	nc
+	; Loop until VBlank
+.wait
+	ld	a,[rLY]
+	cp	145
+	jr	nz,.wait
+	; Turn off LCD
+	ld	a,[rLCDC]
+	res	7,a
+	ld	[rLCDC],a
+	ret
 
 draw:
 stat:
