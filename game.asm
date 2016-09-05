@@ -17,15 +17,18 @@ Smiley:
 	DB	%01111110
 
 Stripe:
-	DB	%10000000
-	DB	%01000000
-	DB	%00100000
-	DB	%00010000
-	DB	%00001000
-	DB	%00000100
-	DB	%00000010
-	DB	%00000001
+	DB	%10001000
+	DB	%01000100
+	DB	%00100010
+	DB	%00010001
+	DB	%10001000
+	DB	%01000100
+	DB	%00100010
+	DB	%00010001
 
+Stripe2Bit:
+	DB	$AA,$CC,$55,$66,$AA,$33,$55,$99
+	DB	$AA,$CC,$55,$66,$AA,$33,$55,$99
 
 mem_Set::
 	inc	b
@@ -33,6 +36,21 @@ mem_Set::
 	jr	.skip
 .loop
 	ld	[hl+],a
+.skip
+	dec	c
+	jr	nz,.loop
+	dec	b
+	jr	nz,.loop
+	ret
+
+mem_Copy::
+	inc	b
+	inc	c
+	jr	.skip
+.loop
+	ld	a,[hl+]
+	ld	[de],a
+	inc	de
 .skip
 	dec	c
 	jr	nz,.loop
@@ -76,11 +94,11 @@ main:
 
 	call	StopLCD
 
-	; Copy the smiley image into memory
-	ld	hl,Stripe
+	; Copy the background image into memory
+	ld	hl,Stripe2Bit
 	ld	de,$8000
-	ld	bc,8
-	call	mem_CopyMono
+	ld	bc,16
+	call	mem_Copy
 
 	; Set the canvas to smileys
 	xor a
