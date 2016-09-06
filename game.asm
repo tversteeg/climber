@@ -30,6 +30,14 @@ Stripe2Bit:
 	DB	$AA,$CC,$55,$66,$AA,$33,$55,$99
 	DB	$AA,$CC,$55,$66,$AA,$33,$55,$99
 
+LetterA:
+	DB	$7E,$7E,$BD,$C3,$FF,$9D,$FF,$81
+	DB	$FF,$9D,$F7,$95,$95,$F7,$F7,$F7
+
+Blank:
+	DB	$00,$00,$00,$00,$00,$00,$00,$00
+	DB	$00,$00,$00,$00,$00,$00,$00,$00
+
 mem_Set::
 	inc	b
 	inc	c
@@ -94,16 +102,23 @@ main:
 
 	call	StopLCD
 
-	; Copy the background image into memory
-	ld	hl,Stripe2Bit
+	; Clear the canvas
+	ld	hl,Blank
 	ld	de,$8000
 	ld	bc,16
 	call	mem_Copy
-
-	; Set the canvas to smileys
 	xor a
 	ld	hl,$9800
 	ld	bc,1024	; Screen width * height in bytes
+	call	mem_Set
+
+	ld	hl,LetterA
+	ld	de,$8010
+	ld	bc,16
+	call	mem_Copy
+	ld	a,$01
+	ld	hl,$9800
+	ld	bc,4
 	call	mem_Set
 
 	; Turn on the LCD Display
