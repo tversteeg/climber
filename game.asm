@@ -2,7 +2,7 @@ INCLUDE "header.inc"
 
 INCLUDE "constants.asm"
 
-SECTION "Start", HOME[$0150]
+SECTION "Start",	HOME[$0150]
 	nop
 	jp main
 
@@ -216,6 +216,16 @@ StopLCD:
 	ret
 
 draw:
+	di
+	push af
+
+	ld	a,[rSCX]
+	inc	a
+	ld	[rSCX],a
+
+	pop	af
+	ei
+	reti
 stat:
 timer:
 serial:
