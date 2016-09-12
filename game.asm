@@ -195,6 +195,10 @@ main:
 	ld	a,$95	; LCDCF_ON|LCDCF_BG8000|LCDCF_BG9800|LCDCF_BGON|LCDCF_OBJ16|LCDCF_OBJOFF
 	ld	[rLCDC],a
 
+	; Enable VBlank interrupt
+	ld	a,$1
+	ld	[rIE],a
+
 	ei
 .loop:
 	halt
@@ -215,18 +219,18 @@ StopLCD:
 	ld	[rLCDC],a
 	ret
 
-draw:
+vblank:
+lcdc:
 	di
 	push af
 
-	ld	a,[rSCX]
+	ldh	a,[rSCX]
 	inc	a
-	ld	[rSCX],a
+	ldh	[rSCX],a
 
 	pop	af
 	ei
 	reti
-stat:
 timer:
 serial:
 joypad:
