@@ -187,7 +187,7 @@ main:
 	call	mem_Copy
 
 	ld	hl,Title
-	ld	de,$9800
+	ld	de,$9A26
 	ld	bc,TITLE_SIZE
 	call	mem_Copy
 
@@ -224,9 +224,9 @@ lcdc:
 	di
 	push af
 
-	ldh	a,[rSCX]
+	ldh	a,[rSCY]
 	inc	a
-	ldh	[rSCX],a
+	ldh	[rSCY],a
 
 	pop	af
 	ei
