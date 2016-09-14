@@ -219,15 +219,20 @@ StopLCD:
 	ld	[rLCDC],a
 	ret
 
-vblank:
-lcdc:
+draw:
+stat:
 	di
 	push af
+
+	ldh	a,[rSCY]
+	cp	70
+	jr	z,.dont_scroll
 
 	ldh	a,[rSCY]
 	inc	a
 	ldh	[rSCY],a
 
+.dont_scroll:
 	pop	af
 	ei
 	reti
