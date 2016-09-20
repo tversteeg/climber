@@ -202,6 +202,28 @@ main:
 	ei
 .loop:
 	halt
+	ld	a,[$C000]
+	cp	$FF
+	jr	nz,.loop
+
+	di
+	push af
+
+	; Scroll the logo to the center
+	ldh	a,[rSCY]
+	cp	70
+	jr	z,.dont_scroll
+	inc	a
+	ldh	[rSCY],a
+
+.dont_scroll:
+	pop	af
+
+	xor	a
+	ld	[$C000],a
+
+	ei
+
 	jr	.loop
 
 StopLCD:
@@ -221,20 +243,9 @@ StopLCD:
 
 draw:
 stat:
-	di
-	push af
-
-	ldh	a,[rSCY]
-	cp	70
-	jr	z,.dont_scroll
-
-	ldh	a,[rSCY]
-	inc	a
-	ldh	[rSCY],a
-
-.dont_scroll:
-	pop	af
-	ei
+	; Set VBlank flag
+	ld	a,$FF
+	ld	[$C000],a
 	reti
 timer:
 serial:
