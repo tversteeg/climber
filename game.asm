@@ -199,6 +199,10 @@ main:
 	ld	a,$1
 	ld	[rIE],a
 
+	; Set the game state
+	xor	a
+	ld	[$C001],a
+
 	ei
 .loop:
 	halt
@@ -209,22 +213,57 @@ main:
 	di
 	push af
 
-	; Scroll the logo to the center
-	ldh	a,[rSCY]
-	cp	70
-	jr	z,.dont_scroll
-	inc	a
-	ldh	[rSCY],a
+	ld	a,[$C001]
+	cp	$0
+	jr	z,.logo
+	dec	a
+	jr	z,.logo2
 
-.dont_scroll:
+.logo
+	call Logo
+	jp	.finished
+
+.logo2
+	call Logo2
+
+.finished
 	pop	af
 
 	xor	a
 	ld	[$C000],a
 
 	ei
-
 	jr	.loop
+
+Logo:
+	; Scroll the logo to the center
+	ldh	a,[rSCY]
+	cp	70
+	jr	z,.finished
+	inc	a
+	ldh	[rSCY],a
+	ret
+
+.finished
+	ld	a,[$C001]
+	inc	a
+	ld	[$C001],a
+	ret
+
+Logo2:
+	; Scroll the logo to the center
+	ldh	a,[rSCX]
+	cp	70
+	jr	z,.finished
+	inc	a
+	ldh	[rSCX],a
+	ret
+
+.finished
+	ld	a,[$C001]
+	inc	a
+	ld	[$C001],a
+	ret
 
 StopLCD:
 	ld	a,[rLCDC]
