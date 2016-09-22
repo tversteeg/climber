@@ -30,10 +30,6 @@ Stripe2Bit:
 	DB	$AA,$CC,$55,$66,$AA,$33,$55,$99
 	DB	$AA,$CC,$55,$66,$AA,$33,$55,$99
 
-LetterA:
-	DB	$7E,$7E,$BD,$C3,$FF,$9D,$FF,$81
-	DB	$FF,$9D,$F7,$95,$95,$F7,$F7,$F7
-
 Blank:
 	DB	$00,$00,$00,$00,$00,$00,$00,$00
 	DB	$00,$00,$00,$00,$00,$00,$00,$00
@@ -202,6 +198,7 @@ main:
 	; Set the game state
 	xor	a
 	ld	[$C001],a
+	ld	[$C002],a
 
 	ei
 .loop:
@@ -217,14 +214,14 @@ main:
 	cp	$0
 	jr	z,.logo
 	dec	a
-	jr	z,.logo2
+	jr	z,.game
 
 .logo
 	call Logo
 	jp	.finished
 
-.logo2
-	call Logo2
+.game
+	call Game
 
 .finished
 	pop	af
@@ -239,18 +236,32 @@ Logo:
 	; Scroll the logo to the center
 	ldh	a,[rSCY]
 	cp	70
-	jr	z,.finished
+	jr	z,.next
 	inc	a
 	ldh	[rSCY],a
 	ret
 
+.next
+	; Wait 255 cycles
+	ld	a,[$C002]
+	inc	a
+	jr	z,.finished
+	ld	[$C002],a
+	ret
+
 .finished
+	; Clear the canvas
+	xor a
+	ld	hl,$9800
+	ld	bc,1024	; Screen width * height in bytes
+	call	mem_Set
+
 	ld	a,[$C001]
 	inc	a
 	ld	[$C001],a
 	ret
 
-Logo2:
+Game:
 	; Scroll the logo to the center
 	ldh	a,[rSCX]
 	cp	70
