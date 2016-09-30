@@ -102,6 +102,12 @@ TITLE_SIZE	EQU	$7
 Title:
 	DB $24,$2D,$2A,$2E,$23,$26,$32
 
+; Variables
+H_VBLANK_READY	EQU	$FF90
+H_GAME_STATE	EQU	$FF91
+
+L_LOGO_COUNTER	EQU	$C000
+
 mem_Set::
 	inc	b
 	inc	c
@@ -197,20 +203,22 @@ main:
 
 	; Set the game state
 	xor	a
-	ld	[$C001],a
-	ld	[$C002],a
+	ld	[H_GAME_STATE],a
+
+	ld	a,$AF
+	ld	[L_LOGO_COUNTER],a
 
 	ei
 .loop:
 	halt
-	ld	a,[$C000]
+	ld	a,[H_VBLANK_READY]
 	cp	$FF
 	jr	nz,.loop
 
 	di
 	push af
 
-	ld	a,[$C001]
+	ld	a,[H_GAME_STATE]
 	cp	$0
 	jr	z,.logo
 	dec	a
@@ -227,7 +235,7 @@ main:
 	pop	af
 
 	xor	a
-	ld	[$C000],a
+	ld	[H_VBLANK_READY],a
 
 	ei
 	jr	.loop
@@ -243,10 +251,10 @@ Logo:
 
 .next
 	; Wait 255 cycles
-	ld	a,[$C002]
+	ld	a,[L_LOGO_COUNTER]
 	inc	a
 	jr	z,.finished
-	ld	[$C002],a
+	ld	[L_LOGO_COUNTER],a
 	ret
 
 .finished
@@ -256,9 +264,9 @@ Logo:
 	ld	bc,1024	; Screen width * height in bytes
 	call	mem_Set
 
-	ld	a,[$C001]
+	ld	a,[H_GAME_STATE]
 	inc	a
-	ld	[$C001],a
+	ld	[H_GAME_STATE],a
 	ret
 
 Game:
@@ -271,9 +279,9 @@ Game:
 	ret
 
 .finished
-	ld	a,[$C001]
+	ld	a,[H_GAME_STATE]
 	inc	a
-	ld	[$C001],a
+	ld	[H_GAME_STATE],a
 	ret
 
 StopLCD:
@@ -295,7 +303,7 @@ draw:
 stat:
 	; Set VBlank flag
 	ld	a,$FF
-	ld	[$C000],a
+	ld	[H_VBLANK_READY],a
 	reti
 timer:
 serial:
